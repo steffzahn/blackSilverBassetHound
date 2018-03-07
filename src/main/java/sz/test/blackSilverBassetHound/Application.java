@@ -16,19 +16,26 @@ public class Application {
 	@Autowired
 	private Campaign campaign;
 
-	private String inputFile = null;
+	@Autowired
+	private ApplicationProperties config;
 
 	@PostConstruct
 	public void init() throws Exception {
 		LOG.info("Application.init(): Campaign " + campaign.getCampaign());
 		LOG.info("Application.init(): CampaignRoot " + campaign.getCampaignRoot());
-		this.inputFile = System.getProperty("inputFile");
-		if( (this.inputFile==null) || (this.inputFile.length()==0) )
+		String recipientFile = config.getRecipientFile();
+		if( (recipientFile==null) || (recipientFile.length()==0) )
 		{
-			LOG.error("Application.init(): input file not specified ( -DinputFile=someFile ). Exit.");
+			LOG.error("Application.init(): recipient file not specified ( -DrecipientFile=someFile ). Exit.");
 			return;
 		}
-		campaign.processRecipientsFile(inputFile);
+		String emailFile = config.getEmailFile();
+		if( (emailFile==null) || (emailFile.length()==0) )
+		{
+			LOG.error("Application.init(): email file not specified ( -DemailFile=someFile ). Exit.");
+			return;
+		}
+		campaign.processRecipientsFile(recipientFile, emailFile);
 	}
 
 	public static void main(String[] args) {

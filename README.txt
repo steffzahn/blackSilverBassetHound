@@ -26,7 +26,7 @@ Build:
 
 Command line:
 
-java -DinputFile=DUMMY.csv -jar ./build/libs/blackSilverBassetHound-0.0.1-SNAPSHOT.jar
+java -DrecipientFile=DUMMY.csv -DemailFile=emailExample.txt -jar ./build/libs/blackSilverBassetHound-0.0.1-SNAPSHOT.jar
 
 Idea:
 

@@ -2,20 +2,36 @@ package sz.test.blackSilverBassetHound;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskRejectedException;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import sz.test.blackSilverBassetHound.db.DataStore;
+import sz.test.blackSilverBassetHound.email.EmailTask;
+import sz.test.blackSilverBassetHound.email.EmailTextHandler;
 import sz.test.blackSilverBassetHound.io.RecipientsParser;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Component
 public class Campaign {
+
+    @Autowired
+    private ApplicationProperties config;
 
     private static final Logger LOG = LoggerFactory.getLogger(Campaign.class);
 
     private String campaignRoot = null;
     private String campaignDir = null;
     private String campaign = null;
+    private String replyTo = null;
+
+    public String getReplyTo() {
+        return replyTo;
+    }
+
+    private int emailThreads = 25;
 
     public static final String RECIPIENT_FILE = "recipientFile";
     public static final String RECIPIENT_FILE_OFFSET = "recipientFileOffset";
@@ -34,39 +50,72 @@ public class Campaign {
         return campaign;
     }
 
-    private String recipientsFile = null;
-    private long recipientsFileOffset = 0L;
-    private RecipientsParser parser = null;
-
-    public void processRecipientsFile(String fn) throws Exception
+    public void processRecipientsFile(String recipientFile, String emailFile) throws Exception
     {
-        this.recipientsFile = fn;
-        String oldRecipientFile = store.get(RECIPIENT_FILE);
-        if( oldRecipientFile!=null && (oldRecipientFile.equals(fn)) )
-        {
-            long o = store.getLong(RECIPIENT_FILE_OFFSET, -1L);
-            if( o>=0 )
+        new Thread() {
+            @Override
+            public void run()
             {
-                this.recipientsFileOffset = o;
+                try {
+                    long recipientsFileOffset = 0L;
+                    String oldRecipientFile = store.get(RECIPIENT_FILE);
+                    if (oldRecipientFile != null && (oldRecipientFile.equals(recipientFile))) {
+                        long o = store.getLong(RECIPIENT_FILE_OFFSET, -1L);
+                        if (o >= 0) {
+                            recipientsFileOffset = o;
+                        }
+                    }
+                    RecipientsParser parser = new RecipientsParser(recipientFile);
+                    parser.seek(recipientsFileOffset);
+                    EmailTextHandler emth = new EmailTextHandler(emailFile);
+                    ThreadPoolTaskExecutor ex = new ThreadPoolTaskExecutor();
+                    ex.setCorePoolSize(emailThreads);
+                    ex.setMaxPoolSize(emailThreads);
+                    ex.setQueueCapacity(emailThreads*2);
+                    ex.setDaemon(true);
+                    ex.setWaitForTasksToCompleteOnShutdown(true);
+                    ex.initialize();
+                    LOG.info("Campaign.processRecipientsFile(): start processing file " + recipientFile);
+                    for (;;) {
+                        List<String> fieldList = parser.readParsedLine();
+                        if (fieldList == null)
+                            break;
+                        String email = emth.preprocess(fieldList);
+                        EmailTask emt = new EmailTask(fieldList.get(0), replyTo, email);
+                        for(;;)
+                        {
+                            try{
+                                ex.execute(emt);
+                                break;
+                            } catch( TaskRejectedException tre )
+                            {
+                                Thread.sleep(200L);
+                            }
+                        }
+                    }
+                    LOG.info("Campaign.processRecipientsFile(): finished processing file " + recipientFile);
+                    ex.shutdown();
+                } catch( Exception e )
+                {
+                    LOG.error( "Campaign.processRecipientsFile.run(): caught exception, ", e);
+                }
             }
-        }
-        parser = new RecipientsParser( fn );
-        parser.seek(this.recipientsFileOffset);
-        LOG.info("Campaign.processRecipientsFile(): start processing file " + fn);
-        for( ;; )
-        {
-            List<String> lineList = parser.readParsedLine();
-            if( lineList == null )
-                break;
-        }
-        LOG.info("Campaign.processRecipientsFile(): finished processing file " + fn);
+        }.start();
+    }
+
+    @PostConstruct
+    public void init()
+    {
+        this.campaign = config.getCampaign();
+        this.campaignRoot = config.getCampaignRoot();
+        this.campaignDir = campaignRoot + "/" + campaign;
+        this.store = new DataStore(campaignDir);
+        this.emailThreads = config.getEmailThreads();
+        this.replyTo = config.getReplyTo();
+        LOG.info( "DEUBG "+replyTo );
     }
 
     public Campaign()
     {
-        this.campaign = System.getProperty("campaign","campaign");
-        this.campaignRoot = System.getProperty("campaignRoot",".");
-        this.campaignDir = campaignRoot + "/" + campaign;
-        this.store = new DataStore(campaignDir);
     }
 }
