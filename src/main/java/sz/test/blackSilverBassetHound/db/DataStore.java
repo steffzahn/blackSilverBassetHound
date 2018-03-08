@@ -13,7 +13,10 @@ public class DataStore implements AutoCloseable {
 
     public String get(String key)
     {
-        String result = mockStore.get(key);
+        String result;
+        synchronized(mockStore) {
+            result = mockStore.get(key);
+        }
         if( (result!=null) && (result.length()==0) )
             result = null;
         return result;
@@ -42,7 +45,14 @@ public class DataStore implements AutoCloseable {
 
     public void set( String key, String value )
     {
-        mockStore.put( key, value);
+        synchronized (mockStore) {
+            mockStore.put(key, value);
+        }
+    }
+
+    public void set( String key, long value )
+    {
+        set( key, Long.toString(value) );
     }
 
     public void close()

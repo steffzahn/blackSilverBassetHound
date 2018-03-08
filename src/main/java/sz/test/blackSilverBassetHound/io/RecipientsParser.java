@@ -15,6 +15,10 @@ public class RecipientsParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(RecipientsParser.class);
 
+    public static final int EMAIL_ADDRESS_INDEX = 0;
+    public static final int FIRSTNAME_INDEX = 1;
+    public static final int LASTNAME_INDEX = 2;
+
     private long pos = 0L;
     private BufferedReader reader = null;
 

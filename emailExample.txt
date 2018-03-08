@@ -1,6 +1,10 @@
-Hallo Herr X,
+Hallo ${FirstName} ${LastName},
 
 darf ich Ihnen unsere neuesten Angebote unterbreiten.
 
 wir freuen uns auf Ihren nächsten Besuch
-   Ihr Team von Kfzteil24
+   Ihr Team von Kfzteile24
+
+Diese Nachricht erricht Sie unter Ihrer Adresse
+${EmailAddress},
+weil Sie sich für unseren Newsletter angemeldet haben.

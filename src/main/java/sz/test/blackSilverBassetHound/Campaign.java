@@ -14,6 +14,8 @@ import sz.test.blackSilverBassetHound.io.RecipientsParser;
 import javax.annotation.PostConstruct;
 import java.util.List;
 
+import static sz.test.blackSilverBassetHound.io.RecipientsParser.EMAIL_ADDRESS_INDEX;
+
 @Component
 public class Campaign {
 
@@ -77,11 +79,21 @@ public class Campaign {
                     ex.initialize();
                     LOG.info("Campaign.processRecipientsFile(): start processing file " + recipientFile);
                     for (;;) {
+                        long pos = parser.getFilePointer();
+                        if( pos % 1000 == 0)
+                        {
+                            store.set(RECIPIENT_FILE_OFFSET, pos);
+                        }
+                        if( recipientsFileOffset+200000 <= pos)
+                        {
+                            LOG.info("Campaign.processRecipientsFile(): position "+pos );
+                            recipientsFileOffset = pos;
+                        }
                         List<String> fieldList = parser.readParsedLine();
                         if (fieldList == null)
                             break;
                         String email = emth.preprocess(fieldList);
-                        EmailTask emt = new EmailTask(fieldList.get(0), replyTo, email);
+                        EmailTask emt = new EmailTask(fieldList.get(EMAIL_ADDRESS_INDEX), replyTo, email);
                         for(;;)
                         {
                             try{
