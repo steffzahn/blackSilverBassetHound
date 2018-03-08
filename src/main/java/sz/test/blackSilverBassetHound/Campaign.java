@@ -77,6 +77,7 @@ public class Campaign {
                     ex.setDaemon(true);
                     ex.setWaitForTasksToCompleteOnShutdown(true);
                     ex.initialize();
+                    long lastTime = System.currentTimeMillis();
                     LOG.info("Campaign.processRecipientsFile(): start processing file " + recipientFile);
                     for (;;) {
                         long pos = parser.getFilePointer();
@@ -84,10 +85,11 @@ public class Campaign {
                         {
                             store.set(RECIPIENT_FILE_OFFSET, pos);
                         }
-                        if( recipientsFileOffset+200000 <= pos)
+                        long now = System.currentTimeMillis();
+                        if( lastTime+10000L <= now )
                         {
                             LOG.info("Campaign.processRecipientsFile(): position "+pos );
-                            recipientsFileOffset = pos;
+                            lastTime = now;
                         }
                         List<String> fieldList = parser.readParsedLine();
                         if (fieldList == null)
