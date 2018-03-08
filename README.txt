@@ -38,3 +38,8 @@ The File IO needs the ability to handle large files, to decode UTF-8, and to get
 
 CSV parsing might ideally be performed by some existing library class, such as FlatFileItemReader, but for this mock-up we use some quick manual implementation in the class RecipientsParser.
 
+The email template is read in from a file specified by the property 'emailFile'. After entries are read from the CSV file, the class EmailTextHandler will apply text replacements within the template for ${FirstName}, ${LastName}, and ${EmailAddress}.
+
+The prepared email content is then used to create an email task object(class EmailTask), which is passed on to an instance of ThreadPoolTaskExecutor to schedule email sending onto the thread pool. The run() method of that class simulates the sending out of emails as requested, by sleeping for half a second.
+
+
