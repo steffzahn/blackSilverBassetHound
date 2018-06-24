@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DataStore implements AutoCloseable {
-    Map<String,String> mockStore = null;
+    private final Map<String,String> mockStore;
 
-    public DataStore(String dir )
+    public DataStore(@SuppressWarnings("unused") String dir )
     {
         mockStore = new HashMap<>();
     }
@@ -22,6 +22,7 @@ public class DataStore implements AutoCloseable {
         return result;
     }
 
+    @SuppressWarnings("unused")
     public String get(String key, String def)
     {
         String s = get(key);
@@ -38,12 +39,13 @@ public class DataStore implements AutoCloseable {
         {
             try{
                 v = Long.parseLong( s );
-            } catch( NumberFormatException nfe) {}
+            } catch( NumberFormatException ignored) {}
         }
         return v;
     }
 
-    public void set( String key, String value )
+    @SuppressWarnings("WeakerAccess")
+    public void set(String key, String value )
     {
         synchronized (mockStore) {
             mockStore.put(key, value);

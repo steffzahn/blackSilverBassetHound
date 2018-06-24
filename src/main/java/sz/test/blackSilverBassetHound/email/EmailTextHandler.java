@@ -16,7 +16,7 @@ public class EmailTextHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(EmailTextHandler.class);
 
-    private String email = null;
+    private String email;
 
     public EmailTextHandler( String fn ) throws Exception
     {

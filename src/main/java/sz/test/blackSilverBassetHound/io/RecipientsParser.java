@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public class RecipientsParser {
     public static final int LASTNAME_INDEX = 2;
 
     private long pos = 0L;
-    private BufferedReader reader = null;
+    private BufferedReader reader;
 
     public RecipientsParser( String fn ) throws Exception
     {

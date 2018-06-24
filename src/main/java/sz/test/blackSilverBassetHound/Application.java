@@ -19,6 +19,7 @@ public class Application {
 	@Autowired
 	private ApplicationProperties config;
 
+	@SuppressWarnings("unused")
 	@PostConstruct
 	public void init() throws Exception {
 		LOG.info("Application.init(): Campaign " + campaign.getCampaign());

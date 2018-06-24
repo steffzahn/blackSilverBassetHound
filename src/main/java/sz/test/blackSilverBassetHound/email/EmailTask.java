@@ -7,15 +7,11 @@ public class EmailTask implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(EmailTask.class);
 
-    private String recipientAddress = null;
-    private String replyTo = null;
-    private String email = null;
+    private String recipientAddress;
 
-    public EmailTask(String recipientAddress, String replyTo, String email)
+    public EmailTask(String recipientAddress, @SuppressWarnings("unused") String replyTo, @SuppressWarnings("unused") String email)
     {
         this.recipientAddress = recipientAddress;
-        this.replyTo = replyTo;
-        this.email = email;
     }
 
     public void run()
@@ -25,7 +21,7 @@ public class EmailTask implements Runnable {
         }
         try{
             Thread.sleep(500L);
-        } catch( InterruptedException ie ) {}
+        } catch( InterruptedException ignored) {}
         if( LOG.isDebugEnabled() ) {
             LOG.debug("EmailTask.run(): finished");
         }
