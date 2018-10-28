@@ -7,7 +7,7 @@ public class EmailTask implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(EmailTask.class);
 
-    private String recipientAddress;
+    private final String recipientAddress;
 
     public EmailTask(String recipientAddress, @SuppressWarnings("unused") String replyTo, @SuppressWarnings("unused") String email)
     {

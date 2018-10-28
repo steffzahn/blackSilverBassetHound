@@ -16,20 +16,21 @@ public class EmailTextHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(EmailTextHandler.class);
 
-    private String email;
+    private final String email;
 
     public EmailTextHandler( String fn ) throws Exception
     {
-        BufferedReader reader = Files.newBufferedReader(Paths.get( fn ));
-        StringBuilder sb = new StringBuilder(80);
-        for(;;) {
-            String line = reader.readLine();
-            if (line == null) {
-                break;
+        try(BufferedReader reader = Files.newBufferedReader(Paths.get( fn ))){
+            StringBuilder sb = new StringBuilder(80);
+            for(;;) {
+                String line = reader.readLine();
+                if (line == null) {
+                    break;
+                }
+                sb.append(line).append('\n');
             }
-            sb.append(line).append('\n');
+            email = sb.toString();
         }
-        email = sb.toString();
     }
 
     public String preprocess( List<String> fields )

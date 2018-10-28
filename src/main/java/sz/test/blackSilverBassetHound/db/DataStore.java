@@ -1,7 +1,10 @@
 package sz.test.blackSilverBassetHound.db;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
+
 
 public class DataStore implements AutoCloseable {
     private final Map<String,String> mockStore;
@@ -11,13 +14,13 @@ public class DataStore implements AutoCloseable {
         mockStore = new HashMap<>();
     }
 
-    public String get(String key)
+    public @Nullable String get(String key)
     {
         String result;
         synchronized(mockStore) {
             result = mockStore.get(key);
         }
-        if( (result!=null) && (result.length()==0) )
+        if( (result!=null) && result.isEmpty() )
             result = null;
         return result;
     }
@@ -52,7 +55,7 @@ public class DataStore implements AutoCloseable {
         }
     }
 
-    public void set( String key, long value )
+    public void set( String key, final long value )
     {
         set( key, Long.toString(value) );
     }

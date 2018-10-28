@@ -5,9 +5,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 @Component
 @EnableConfigurationProperties
-@ConfigurationProperties(value = "")
+@ConfigurationProperties
 public class ApplicationProperties {
 
     private String campaign;

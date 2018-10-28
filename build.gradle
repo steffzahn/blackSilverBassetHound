@@ -26,5 +26,7 @@ repositories {
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter')
+	// https://mvnrepository.com/artifact/org.jetbrains/annotations
+	compile group: 'org.jetbrains', name: 'annotations', version: '15.0'
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

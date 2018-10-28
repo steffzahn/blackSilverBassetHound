@@ -18,7 +18,7 @@ public class RecipientsParser {
     public static final int FIRSTNAME_INDEX = 1;
     public static final int LASTNAME_INDEX = 2;
 
-    private long pos = 0L;
+    private long filePointer = 0L;
     private BufferedReader reader;
 
     public RecipientsParser( String fn ) throws Exception
@@ -26,23 +26,27 @@ public class RecipientsParser {
         reader = Files.newBufferedReader(Paths.get( fn ));
     }
 
-    public long getFilePointer()
-    {
-        return this.pos;
+    protected RecipientsParser() {
+        throw new IllegalStateException("snh");
     }
 
-    public void seek(long pos) throws Exception
+    public long getFilePointer()
     {
-        while( this.pos < pos )
+        return this.filePointer;
+    }
+
+    public void seek(long filePointer) throws Exception
+    {
+        while( this.filePointer < filePointer )
         {
             if( reader.readLine()==null ) {
                 break;
             }
-            this.pos++;
+            this.filePointer++;
         }
     }
 
-    private int copyItem( StringBuilder sb, String source, int startIndex)
+    private static int copyItem(StringBuilder sb, String source, int startIndex)
     {
         int sourceLength = source.length();
         int ix= startIndex;
@@ -59,7 +63,6 @@ public class RecipientsParser {
                 sb.append( source, startIndex, ix );
             }
             ix++;
-            return ix;
         } else {
             startIndex = ix;
             while(  (ix<sourceLength  ) && (source.charAt(ix) != ';') )
@@ -68,8 +71,8 @@ public class RecipientsParser {
             }
             sb.append( source, startIndex, ix );
             ix++;
-            return ix;
         }
+        return ix;
     }
 
     public List<String> readParsedLine() throws Exception
@@ -78,7 +81,7 @@ public class RecipientsParser {
         if( line==null ) {
             return null;
         }
-        this.pos++;
+        this.filePointer++;
         List<String> result = new ArrayList<>(3);
         StringBuilder sb = new StringBuilder();
         int lineLength = line.length();
@@ -100,5 +103,13 @@ public class RecipientsParser {
             }
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "RecipientsParser{" +
+                "filePointer=" + filePointer +
+                ", reader=" + reader +
+                '}';
     }
 }

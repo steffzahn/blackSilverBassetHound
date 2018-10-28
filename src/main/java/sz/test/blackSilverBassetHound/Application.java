@@ -11,37 +11,48 @@ import javax.annotation.PostConstruct;
 @SpringBootApplication
 public class Application {
 
-	private static final Logger LOG = LoggerFactory.getLogger(Application.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Application.class);
 
-	@Autowired
-	private Campaign campaign;
+    @SuppressWarnings("InstanceVariableMayNotBeInitialized")
+    @Autowired
+    private Campaign campaign;
 
-	@Autowired
-	private ApplicationProperties config;
+    @SuppressWarnings("InstanceVariableMayNotBeInitialized")
+    @Autowired
+    private ApplicationProperties config;
 
-	@SuppressWarnings("unused")
-	@PostConstruct
-	public void init() throws Exception {
-		LOG.info("Application.init(): Campaign " + campaign.getCampaign());
-		LOG.info("Application.init(): CampaignRoot " + campaign.getCampaignRoot());
-		String recipientFile = config.getRecipientFile();
-		if( (recipientFile==null) || (recipientFile.length()==0) )
-		{
-			LOG.error("Application.init(): recipient file not specified ( -DrecipientFile=someFile ). Exit.");
-			return;
-		}
-		String emailFile = config.getEmailFile();
-		if( (emailFile==null) || (emailFile.length()==0) )
-		{
-			LOG.error("Application.init(): email file not specified ( -DemailFile=someFile ). Exit.");
-			return;
-		}
-		campaign.processRecipientsFile(recipientFile, emailFile);
-	}
+    public Application() { }
 
-	public static void main(String[] args) {
-		LOG.info("Application.main(): started");
-		SpringApplication.run(Application.class, args);
-		LOG.info("Application.main(): finished. Process expected to continue from here.");
-	}
+    @SuppressWarnings("unused")
+    @PostConstruct
+    public void init() {
+        LOG.info("Application.init(): Campaign " + campaign.getCampaign());
+        LOG.info("Application.init(): CampaignRoot " + campaign.getCampaignRoot());
+        String recipientFile = config.getRecipientFile();
+        if ((recipientFile == null) || recipientFile.isEmpty()) {
+            LOG.error("Application.init(): recipient file not specified ( -DrecipientFile=someFile ). Exit.");
+            return;
+        }
+        String emailFile = config.getEmailFile();
+        if ((emailFile == null) || emailFile.isEmpty()) {
+            LOG.error("Application.init(): email file not specified ( -DemailFile=someFile ). Exit.");
+            return;
+        }
+        this.campaign.processRecipientsFile(recipientFile, emailFile);
+    }
+
+    public static void main(final String[] args) {
+        LOG.info("Application.main(): started");
+        //noinspection resource
+        SpringApplication.run(Application.class, args);
+        LOG.info("Application.main(): finished. Process expected to continue from here.");
+    }
+
+    @Override
+    public String toString() {
+        return "Application{" +
+                "campaign=" + campaign +
+                ", config=" + config +
+                '}';
+    }
 }
