@@ -19,6 +19,7 @@ import static sz.test.blackSilverBassetHound.io.RecipientsParser.EMAIL_ADDRESS_I
 @Component
 public class Campaign {
 
+    @SuppressWarnings("unused")
     @Autowired
     private ApplicationProperties config;
 

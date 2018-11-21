@@ -13,11 +13,11 @@ public class Application {
 
     private static final Logger LOG = LoggerFactory.getLogger(Application.class);
 
-    @SuppressWarnings("InstanceVariableMayNotBeInitialized")
+    @SuppressWarnings({"InstanceVariableMayNotBeInitialized", "unused"})
     @Autowired
     private Campaign campaign;
 
-    @SuppressWarnings("InstanceVariableMayNotBeInitialized")
+    @SuppressWarnings({"InstanceVariableMayNotBeInitialized", "unused"})
     @Autowired
     private ApplicationProperties config;
 
